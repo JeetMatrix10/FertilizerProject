@@ -75,6 +75,15 @@ def on_submit():
         messagebox.showerror("Error", str(e))
 
 
+def on_clear():
+    soil_var.set(le_soil.classes_[0])
+    crop_var.set(le_crop.classes_[0])
+    for entry in numeric_entries.values():
+        entry.delete(0, tk.END)
+    result_label.config(text="")
+    warning_label.config(text="")
+
+
 root = tk.Tk()
 root.title("Fertilizer Recommendation")
 root.geometry("380x430")
@@ -94,14 +103,18 @@ ttk.Combobox(frame, textvariable=crop_var, values=list(le_crop.classes_),
 
 numeric_entries = {}
 for i, col in enumerate(NUMERIC_COLUMNS, start=2):
-    ttk.Label(frame, text=col).grid(row=i, column=0, sticky="w", pady=4)
+    lo, hi = FEATURE_RANGES[col]
+    ttk.Label(frame, text=f"{col} ({lo}-{hi})").grid(row=i, column=0, sticky="w", pady=4)
     entry = ttk.Entry(frame)
     entry.grid(row=i, column=1, pady=4)
     numeric_entries[col] = entry
 
 submit_row = len(NUMERIC_COLUMNS) + 2
 ttk.Button(frame, text="Recommend", command=on_submit).grid(
-    row=submit_row, column=0, columnspan=2, pady=12
+    row=submit_row, column=0, pady=12
+)
+ttk.Button(frame, text="Clear", command=on_clear).grid(
+    row=submit_row, column=1, pady=12
 )
 
 result_label = ttk.Label(frame, text="", font=("Segoe UI", 11, "bold"), wraplength=320)
